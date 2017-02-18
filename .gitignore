@@ -1,0 +1,7 @@
+.vscode/*
+classify/__pycache__/*
+__pycache__/*
+tests/*
+data/*
+embeddings/*
+tags
