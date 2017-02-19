@@ -106,7 +106,7 @@ class Model:
 
         target = tf.placeholder(tf.float32, [self.batch_size, 2], 'target')
 
-        cell = tf.nn.rnn_cell.BasicLSTMCell(self.num_hidden)
+        cell = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
         val, state = tf.nn.dynamic_rnn(
                 cell, data, sequence_length=lengths, dtype=tf.float32)
 

@@ -76,7 +76,7 @@ indexer.restore()
 print('Embeddings loaded...')
 
 loader = Loader(indexer)
-with Model(indexer, num_hidden=75, epoch=args.epoch, max_length=args.length,
+with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
            batch_size=args.batch_size, save_path=args.model) as model:
     if args.train:
         total_input, total_output = loader.load_file(args.train)
