@@ -11,12 +11,13 @@ class Model:
     DEFAULT_PATH = './model/model.ckpt'
 
     def __init__(self, indexer, num_hidden, epoch, max_length,
-                 batch_size, save_path=DEFAULT_PATH):
+                 batch_size, error, save_path=DEFAULT_PATH):
         self.log = logging.getLogger('Model')
         self.max_length = max_length
         self.batch_size = batch_size
         self.num_hidden = num_hidden
         self.epoch = epoch
+        self.error = error
         self.keep_prob = tf.constant(1.0)
         self.save_path = save_path
 
@@ -58,9 +59,14 @@ class Model:
                         self.graph['lengths']: blen
                     })
 
+            epoch_error = 100.0 * errors / length
             self.log.debug('Errors: {:d} ({:3.1f}%)'.format(
                 errors,
-                100.0 * errors / length))
+                epoch_error))
+
+            if epoch_error < self.error:
+                self.log.debug('The desired accuracy achieved.')
+                break
 
         saver = tf.train.Saver()
         saver.save(self.session, self.save_path)

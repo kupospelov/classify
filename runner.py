@@ -22,10 +22,10 @@ parser.add_argument('-t', '--train',
                     action='store',
                     help='retrain the model using the train set')
 
-parser.add_argument('-e', '--embeddings',
-                    dest='embeddings',
+parser.add_argument('-r', '--representations',
+                    dest='representations',
                     action='store',
-                    help='file with word embeddings',
+                    help='file with vector representations of words',
                     required=True)
 
 parser.add_argument('-s', '--sentences',
@@ -65,19 +65,27 @@ parser.add_argument('-c', '--count',
                     type=int,
                     default=50)
 
+parser.add_argument('-e', '--error',
+                    dest='error',
+                    action='store',
+                    help='acceptable percentage error',
+                    type=float,
+                    default=0.5)
+
 args = parser.parse_args()
 
 if not args.train and not args.sentences and not args.interactive:
     print('Nothing to do.')
     exit()
 
-indexer = Indexer(args.embeddings)
+indexer = Indexer(args.representations)
 indexer.restore()
-print('Embeddings loaded...')
+print('Word embeddings loaded...')
 
 loader = Loader(indexer)
 with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
-           batch_size=args.batch_size, save_path=args.model) as model:
+           batch_size=args.batch_size, error=args.error,
+           save_path=args.model) as model:
     if args.train:
         total_input, total_output = loader.load_file(args.train)
         print('Training set loaded...')
