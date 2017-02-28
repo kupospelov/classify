@@ -68,6 +68,7 @@ class Model:
                 self.log.debug('The desired accuracy achieved.')
                 break
 
+    def save(self):
         saver = tf.train.Saver()
         saver.save(self.session, self.save_path)
         self.log.debug('Saved.')

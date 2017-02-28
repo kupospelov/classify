@@ -89,7 +89,14 @@ with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
     if args.train:
         total_input, total_output = loader.load_file(args.train)
         print('Training set loaded...')
-        model.train(total_input, total_output)
+
+        try:
+            model.train(total_input, total_output)
+        except KeyboardInterrupt:
+            print('Training interrupted.')
+
+        model.save()
+
     elif args.sentences or args.interactive:
         model.restore()
 
