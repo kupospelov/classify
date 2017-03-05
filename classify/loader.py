@@ -1,12 +1,15 @@
 import re
-import logging
+
+from classify.logger import Logger
+from classify.timer import Timer
 
 
 class Loader:
     def __init__(self, indexer):
+        self.log = Logger.create(self)
         self.indexer = indexer
-        self.log = logging.getLogger('Loader')
 
+    @Timer('Training set loaded')
     def load_file(self, file_name):
         with open(file_name, 'r') as f:
             r = self.load(f)
@@ -20,7 +23,7 @@ class Loader:
                 inputs.append(self.to_indices(i[0]))
                 outputs.append(self.to_one_hot(i[1]))
 
-            self.log.debug('Max sequence length is {:d}'.format(max_length))
+            self.log.debug('Max sequence length is %d', max_length)
             return inputs, outputs
 
     def load_sentences(self, sentences):

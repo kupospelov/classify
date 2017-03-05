@@ -1,8 +1,9 @@
-import logging
 import tensorflow as tf
 import numpy as np
 
+from classify.logger import Logger
 from classify.lookup import Lookup
+from classify.timer import Timer
 
 
 class Model:
@@ -12,7 +13,7 @@ class Model:
 
     def __init__(self, indexer, num_hidden, epoch, max_length,
                  batch_size, error, save_path=DEFAULT_PATH):
-        self.log = logging.getLogger('Model')
+        self.log = Logger.create(self)
         self.max_length = max_length
         self.batch_size = batch_size
         self.num_hidden = num_hidden
@@ -31,13 +32,14 @@ class Model:
     def __exit__(self, exc_type, exc_val, traceback):
         self.close()
 
+    @Timer('Training finished')
     def train(self, inputs, outputs):
         length = len(inputs)
-        self.log.debug('Training set: {:d} samples.'.format(length))
+        self.log.debug('Training set: %d samples.', length)
 
         self.session.run(tf.global_variables_initializer())
         for i in range(self.epoch):
-            self.log.debug('Epoch {:3d}/{:3d} ...'.format(i + 1, self.epoch))
+            self.log.debug('Epoch %3d/%3d...', i + 1, self.epoch)
 
             errors = 0
             for blen, binp, bout in self.batch(inputs, outputs):
@@ -60,23 +62,21 @@ class Model:
                     })
 
             epoch_error = 100.0 * errors / length
-            self.log.debug('Errors: {:d} ({:3.1f}%)'.format(
-                errors,
-                epoch_error))
+            self.log.debug('Errors: %d (%3.1f%%)', errors, epoch_error)
 
             if epoch_error < self.error:
                 self.log.debug('The desired accuracy achieved.')
                 break
 
+    @Timer('Saved')
     def save(self):
         saver = tf.train.Saver()
         saver.save(self.session, self.save_path)
-        self.log.debug('Saved.')
 
+    @Timer('Restored')
     def restore(self):
         saver = tf.train.Saver()
         saver.restore(self.session, self.save_path)
-        self.log.debug('Restored.')
 
     def predict(self, tests):
         result = []

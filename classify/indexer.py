@@ -1,3 +1,6 @@
+from classify.timer import Timer
+
+
 class Indexer:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -12,6 +15,7 @@ class Indexer:
     def __getitem__(self, word):
         return self.dictionary.get(word.lower(), 0)
 
+    @Timer('Word embeddings loaded')
     def restore(self):
         with open(self.file_path, 'r') as f:
             f.readline()

@@ -5,6 +5,7 @@ import logging
 
 from classify.indexer import Indexer
 from classify.loader import Loader
+from classify.logger import Logger
 from classify.model import Model
 
 
@@ -13,7 +14,7 @@ def evaluation_result(prediction):
             *(round(p * 100) for p in prediction))
 
 
-logging.basicConfig(level=logging.DEBUG, format='%(name)s: %(message)s')
+Logger.initialize(logging.DEBUG)
 parser = argparse.ArgumentParser('runner')
 
 parser.add_argument('-t', '--train',
@@ -80,7 +81,6 @@ if not args.train and not args.sentences and not args.interactive:
 
 indexer = Indexer(args.representations)
 indexer.restore()
-print('Word embeddings loaded...')
 
 loader = Loader(indexer)
 with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
@@ -88,7 +88,6 @@ with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
            save_path=args.model) as model:
     if args.train:
         total_input, total_output = loader.load_file(args.train)
-        print('Training set loaded...')
 
         try:
             model.train(total_input, total_output)
