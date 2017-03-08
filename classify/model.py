@@ -8,7 +8,6 @@ from classify.timer import Timer
 
 class Model:
     SCOPE_NAME = 'model'
-    STATE_SIZE = 100
     DEFAULT_PATH = './model/model.ckpt'
 
     def __init__(self, indexer, num_hidden, epoch, max_length,
@@ -21,6 +20,7 @@ class Model:
         self.error = error
         self.keep_prob = tf.constant(1.0)
         self.save_path = save_path
+        self.vector_dims = indexer.dimensions
 
         self.session = tf.Session()
         self.graph = self.reuse_graph()
@@ -108,7 +108,7 @@ class Model:
 
         data = tf.placeholder(
                 tf.float32,
-                [self.batch_size, self.max_length, Model.STATE_SIZE],
+                [self.batch_size, self.max_length, self.vector_dims],
                 'data')
 
         target = tf.placeholder(tf.float32, [self.batch_size, 2], 'target')

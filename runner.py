@@ -79,8 +79,8 @@ if not args.train and not args.sentences and not args.interactive:
     print('Nothing to do.')
     exit()
 
-indexer = Indexer(args.representations)
-indexer.restore()
+indexer = Indexer()
+indexer.restore(args.representations)
 
 loader = Loader(indexer)
 with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
