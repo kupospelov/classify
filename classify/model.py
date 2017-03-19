@@ -10,15 +10,17 @@ class Model:
     SCOPE_NAME = 'model'
     DEFAULT_PATH = './model/model.ckpt'
 
-    def __init__(self, indexer, num_hidden, epoch, max_length,
-                 batch_size, error, save_path=DEFAULT_PATH):
+    def __init__(self, indexer, num_hidden, num_layers, keep_prob,
+                epoch, max_length, batch_size, error,
+                save_path=DEFAULT_PATH):
         self.log = Logger.create(self)
         self.max_length = max_length
         self.batch_size = batch_size
         self.num_hidden = num_hidden
+        self.keep_prob = keep_prob
+        self.num_layers = num_layers
         self.epoch = epoch
         self.error = error
-        self.keep_prob = tf.constant(1.0)
         self.save_path = save_path
         self.vector_dims = indexer.dimensions
 
@@ -113,9 +115,12 @@ class Model:
 
         target = tf.placeholder(tf.float32, [self.batch_size, 2], 'target')
 
-        cell = tf.contrib.rnn.BasicLSTMCell(self.num_hidden)
+        cell = tf.contrib.rnn.GRUCell(self.num_hidden)
+        dropout = tf.contrib.rnn.DropoutWrapper(
+            cell, output_keep_prob=self.keep_prob)
+        multicell = tf.contrib.rnn.MultiRNNCell([dropout] * self.num_layers)
         val, state = tf.nn.dynamic_rnn(
-                cell, data, sequence_length=lengths, dtype=tf.float32)
+                multicell, data, sequence_length=lengths, dtype=tf.float32)
 
         # An approach to handle variable length sequences
         idx = tf.range(tf.shape(data)[0]) * self.max_length + (lengths - 1)

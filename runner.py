@@ -83,7 +83,8 @@ indexer = Indexer()
 indexer.restore(args.representations)
 
 loader = Loader(indexer)
-with Model(indexer, num_hidden=75, epoch=args.epochs, max_length=args.length,
+with Model(indexer, num_hidden=75, num_layers=3, keep_prob=0.5,
+           epoch=args.epochs, max_length=args.length,
            batch_size=args.batch_size, error=args.error,
            save_path=args.model) as model:
     if args.train:
