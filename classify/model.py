@@ -10,17 +10,15 @@ class Model:
     SCOPE_NAME = 'model'
     DEFAULT_PATH = './model/model.ckpt'
 
-    def __init__(self, indexer, num_hidden, num_layers, keep_prob,
-                epoch, max_length, batch_size, error,
-                save_path=DEFAULT_PATH):
+    def __init__(self, indexer, params, save_path=DEFAULT_PATH):
         self.log = Logger.create(self)
-        self.max_length = max_length
-        self.batch_size = batch_size
-        self.num_hidden = num_hidden
-        self.keep_prob = keep_prob
-        self.num_layers = num_layers
-        self.epoch = epoch
-        self.error = error
+        self.max_length = params.max_length
+        self.batch_size = params.batch_size
+        self.num_hidden = params.num_hidden
+        self.keep_prob = params.keep_prob
+        self.num_layers = params.num_layers
+        self.epoch = params.epoch
+        self.error = params.error
         self.save_path = save_path
         self.vector_dims = indexer.dimensions
 

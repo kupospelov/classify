@@ -6,6 +6,7 @@ import logging
 from classify.indexer import Indexer
 from classify.loader import Loader
 from classify.logger import Logger
+from classify.params import Params
 from classify.model import Model
 
 
@@ -46,34 +47,32 @@ parser.add_argument('-m', '--model',
                     default='/tmp/classify.ckpt')
 
 parser.add_argument('-l', '--length',
-                    dest='length',
+                    dest='max_length',
                     action='store',
                     help='maximum sentence length',
-                    type=int,
-                    default=75)
+                    type=int)
 
 parser.add_argument('-b', '--batch-size',
                     dest='batch_size',
                     action='store',
                     help='batch size',
-                    type=int,
-                    default=400)
+                    type=int)
 
 parser.add_argument('-c', '--count',
-                    dest='epochs',
+                    dest='epoch',
                     action='store',
                     help='count of epochs',
-                    type=int,
-                    default=50)
+                    type=int)
 
 parser.add_argument('-e', '--error',
                     dest='error',
                     action='store',
                     help='acceptable percentage error',
-                    type=float,
-                    default=0.5)
+                    type=float)
 
 args = parser.parse_args()
+params = Params()
+params.fill(vars(args))
 
 if not args.train and not args.sentences and not args.interactive:
     print('Nothing to do.')
@@ -83,10 +82,7 @@ indexer = Indexer()
 indexer.restore(args.representations)
 
 loader = Loader(indexer)
-with Model(indexer, num_hidden=75, num_layers=3, keep_prob=0.5,
-           epoch=args.epochs, max_length=args.length,
-           batch_size=args.batch_size, error=args.error,
-           save_path=args.model) as model:
+with Model(indexer, params, save_path=args.model) as model:
     if args.train:
         total_input, total_output = loader.load_file(args.train)
 
