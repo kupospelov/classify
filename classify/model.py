@@ -50,7 +50,8 @@ class Model:
                     feed_dict={
                         self.graph['data']: vectors,
                         self.graph['target']: bout,
-                        self.graph['lengths']: blen
+                        self.graph['lengths']: blen,
+                        self.graph['keep_prob']: self.keep_prob
                     })
 
                 errors += self.session.run(
@@ -58,7 +59,8 @@ class Model:
                     feed_dict={
                         self.graph['data']: vectors,
                         self.graph['target']: bout,
-                        self.graph['lengths']: blen
+                        self.graph['lengths']: blen,
+                        self.graph['keep_prob']: 1.0
                     })
 
             epoch_error = 100.0 * errors / length
@@ -88,7 +90,8 @@ class Model:
                 self.graph['prediction'],
                 feed_dict={
                     self.graph['data']: vectors,
-                    self.graph['lengths']: blen
+                    self.graph['lengths']: blen,
+                    self.graph['keep_prob']: 1.0
                 }))
 
         return result
@@ -104,19 +107,18 @@ class Model:
             scope.reuse_variables()
 
     def build_graph(self):
+        keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         lengths = tf.placeholder(tf.int32, [self.batch_size], 'lengths')
-
         data = tf.placeholder(
                 tf.float32,
                 [self.batch_size, self.max_length, self.vector_dims],
                 'data')
-
         target = tf.placeholder(tf.float32, [self.batch_size, 2], 'target')
 
-        cell = tf.contrib.rnn.GRUCell(self.num_hidden)
-        dropout = tf.contrib.rnn.DropoutWrapper(
-            cell, output_keep_prob=self.keep_prob)
-        multicell = tf.contrib.rnn.MultiRNNCell([dropout] * self.num_layers)
+        layers = [tf.contrib.rnn.DropoutWrapper(
+            tf.contrib.rnn.GRUCell(self.num_hidden),
+            output_keep_prob=keep_prob) for _ in range(self.num_layers)]
+        multicell = tf.contrib.rnn.MultiRNNCell(layers)
         val, state = tf.nn.dynamic_rnn(
                 multicell, data, sequence_length=lengths, dtype=tf.float32)
 
@@ -143,6 +145,7 @@ class Model:
             'data': data,
             'target': target,
             'lengths': lengths,
+            'keep_prob': keep_prob,
             'prediction': prediction,
             'minimize': minimize,
             'error': error
