@@ -22,7 +22,7 @@ class Model:
         self.save_path = save_path
         self.vector_dims = indexer.dimensions
 
-        self.session = tf.Session()
+        self.session = tf.Session(graph=tf.Graph())
         self.graph = self.reuse_graph()
         self.lookup = Lookup(indexer, self.max_length)
 
@@ -37,7 +37,7 @@ class Model:
         length = len(inputs)
         self.log.debug('Training set: %d samples.', length)
 
-        self.session.run(tf.global_variables_initializer())
+        self.session.run(tf.variables_initializer(self.graph['variables']))
         for i in range(self.epoch):
             self.log.debug('Epoch %3d/%3d...', i + 1, self.epoch)
 
@@ -72,12 +72,12 @@ class Model:
 
     @Timer('Saved')
     def save(self):
-        saver = tf.train.Saver()
+        saver = tf.train.Saver(self.graph['variables'])
         saver.save(self.session, self.save_path)
 
     @Timer('Restored')
     def restore(self):
-        saver = tf.train.Saver()
+        saver = tf.train.Saver(self.graph['variables'])
         saver.restore(self.session, self.save_path)
 
     def predict(self, tests):
@@ -102,9 +102,10 @@ class Model:
         self.log.debug('Finished.')
 
     def reuse_graph(self):
-        with tf.variable_scope(self.SCOPE_NAME) as scope:
-            return self.build_graph()
-            scope.reuse_variables()
+        with self.session.graph.as_default():
+            with tf.variable_scope(self.SCOPE_NAME) as scope:
+                return self.build_graph()
+                scope.reuse_variables()
 
     def build_graph(self):
         keep_prob = tf.placeholder(tf.float32, name='keep_prob')
@@ -140,6 +141,7 @@ class Model:
 
         mistakes = tf.not_equal(tf.argmax(target, 1), tf.argmax(prediction, 1))
         error = tf.reduce_sum(tf.cast(mistakes, tf.int32))
+        variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.SCOPE_NAME)
 
         return {
             'data': data,
@@ -148,7 +150,8 @@ class Model:
             'keep_prob': keep_prob,
             'prediction': prediction,
             'minimize': minimize,
-            'error': error
+            'error': error,
+            'variables': variables
         }
 
     def batch(self, inputs, outputs):
