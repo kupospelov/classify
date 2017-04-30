@@ -25,6 +25,17 @@ class Params:
         self.max_length = self.get(dic, 'max_length', self.max_length)
         self.error = self.get(dic, 'error', self.error)
 
+    def to_dic(self):
+        return {
+                    'num_hidden' : self.num_hidden,
+                    'num_layers' : self.num_layers,
+                    'keep_prob' : self.keep_prob,
+                    'epoch' : self.epoch,
+                    'batch_size' : self.batch_size,
+                    'max_length' : self.max_length,
+                    'error' : self.error
+                }
+
     @staticmethod
     def get(dic, key, default):
         # Use default value if None is explicitly stored in dic

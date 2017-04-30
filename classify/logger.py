@@ -8,4 +8,8 @@ class Logger:
 
     @staticmethod
     def create(instance):
-        return logging.getLogger(instance.__class__.__name__)
+        return Logger.create_with_name(instance.__class__.__name__)
+
+    @staticmethod
+    def create_with_name(name):
+        return logging.getLogger(name)

@@ -9,22 +9,25 @@ class Loader:
         self.log = Logger.create(self)
         self.indexer = indexer
 
-    @Timer('Training set loaded')
     def load_file(self, file_name):
         with open(file_name, 'r') as f:
-            r = self.load(f)
+            return self.load_data(f)
 
-            inputs = []
-            outputs = []
-            max_length = 0
+    @Timer('Training set loaded')
+    def load_data(self, data):
+        r = self.load(data)
 
-            for i in r:
-                max_length = max(max_length, len(i[0]))
-                inputs.append(self.to_indices(i[0]))
-                outputs.append(self.to_one_hot(i[1]))
+        inputs = []
+        outputs = []
+        max_length = 0
 
-            self.log.debug('Max sequence length is %d', max_length)
-            return inputs, outputs
+        for i in r:
+            max_length = max(max_length, len(i[0]))
+            inputs.append(self.to_indices(i[0]))
+            outputs.append(self.to_one_hot(i[1]))
+
+        self.log.debug('Max sequence length is %d.', max_length)
+        return inputs, outputs
 
     def load_sentences(self, sentences):
         return [self.to_indices(self.handle_line(s)) for s in sentences]
