@@ -1,5 +1,7 @@
 .vscode/*
 classify/__pycache__/*
+classify/rest/__pycache__/*
+classify/util/__pycache__/*
 __pycache__/*
 tests/*
 data/*
