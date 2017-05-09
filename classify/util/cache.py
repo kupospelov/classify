@@ -1,6 +1,6 @@
 import collections
 
-from classify.logger import Logger
+from classify.util.logger import Logger
 
 
 class Cache:

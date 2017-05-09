@@ -1,10 +1,11 @@
 import re
 
-from classify.logger import Logger
-from classify.timer import Timer
+from classify.util.logger import Logger
+from classify.util.timer import Timer
 
 
 class Loader:
+    """Loads input and output data for use in model."""
     def __init__(self, indexer):
         self.log = Logger.create(self)
         self.indexer = indexer

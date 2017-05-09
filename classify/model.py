@@ -1,12 +1,13 @@
 import tensorflow as tf
 import numpy as np
 
-from classify.logger import Logger
 from classify.lookup import Lookup
-from classify.timer import Timer
+from classify.util.logger import Logger
+from classify.util.timer import Timer
 
 
 class Model:
+    """The neural network model."""
     SCOPE_NAME = 'model'
     DEFAULT_PATH = './model/model.ckpt'
 
@@ -141,7 +142,8 @@ class Model:
 
         mistakes = tf.not_equal(tf.argmax(target, 1), tf.argmax(prediction, 1))
         error = tf.reduce_sum(tf.cast(mistakes, tf.int32))
-        variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.SCOPE_NAME)
+        variables = tf.get_collection(
+            tf.GraphKeys.GLOBAL_VARIABLES, scope=self.SCOPE_NAME)
 
         return {
             'data': data,

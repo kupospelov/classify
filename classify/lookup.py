@@ -2,6 +2,7 @@ import tensorflow as tf
 
 
 class Lookup:
+    """Retrieves word embeddings for vector of word indices."""
     def __init__(self, indexer, max_length):
         self.max_length = max_length
         self.indexer = indexer

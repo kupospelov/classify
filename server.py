@@ -9,8 +9,8 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 
-from classify.logger import Logger
 from classify.rest.provider import Provider
+from classify.util.logger import Logger
 
 parser = argparse.ArgumentParser('server')
 

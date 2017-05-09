@@ -5,9 +5,9 @@ import logging
 
 from classify.indexer import Indexer
 from classify.loader import Loader
-from classify.logger import Logger
 from classify.params import Params
 from classify.model import Model
+from classify.util.logger import Logger
 
 
 def evaluation_result(prediction):

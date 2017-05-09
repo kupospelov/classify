@@ -1,8 +1,9 @@
-from classify.logger import Logger
-from classify.timer import Timer
+from classify.util.logger import Logger
+from classify.util.timer import Timer
 
 
 class Indexer:
+    """Determines the index of a word in the word embedding matrix."""
     def __init__(self):
         self.log = Logger.create(self)
         self.dictionary = {}

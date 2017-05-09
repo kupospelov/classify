@@ -2,6 +2,7 @@ import logging
 
 
 class Logger:
+    """Logging helpers."""
     @staticmethod
     def initialize(log_level):
         logging.basicConfig(level=log_level, format='%(name)s: %(message)s')
